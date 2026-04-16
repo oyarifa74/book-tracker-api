@@ -1,6 +1,6 @@
 # 📚 Book Tracker API
 
-A RESTful API built with Python, Flask, and PostgreSQL, fully containerized with Docker and Docker Compose.
+![CI Pipeline](https://github.com/oyarifa74/book-tracker-api/actions/workflows/ci.yml/badge.svg)
 
 ## 🛠️ Tech Stack
 
