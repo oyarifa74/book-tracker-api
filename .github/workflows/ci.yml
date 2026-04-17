@@ -10,6 +10,27 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: postgresql://postgres:password123@localhost:5432/booktracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: booktracker
+
+    services:
+      db:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password123
+          POSTGRES_DB: booktracker
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -27,20 +48,11 @@ jobs:
       - name: Build Docker image
         run: docker build -t book-tracker-api .
 
-      - name: Run containers
+      - name: Start Flask API
         run: |
-          docker-compose up -d
-          sleep 10
-
-        env:
-          DATABASE_URL: postgresql://postgres:password123@db:5432/booktracker
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password123
-          POSTGRES_DB: booktracker
+          python main.py &
+          sleep 5
 
       - name: Test API health
         run: |
           curl --retry 5 --retry-delay 3 --retry-connrefused http://localhost:5000/books
-
-      - name: Tear down
-        run: docker-compose down
